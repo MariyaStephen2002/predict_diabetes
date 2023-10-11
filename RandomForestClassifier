@@ -1,33 +1,47 @@
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
-df = pd.read_csv('/content/diabetes_prediction_dataset.csv')
-eng =OrdinalEncoder()
-df['smoking_history'] =eng.fit_transform(df[['smoking_history']])
-df['gender'] =eng.fit_transform(df[['gender']])
-y = df['diabetes']
-x= df.drop(['diabetes'],axis= 1)
-df.diabetes.value_counts()
-x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.15)
 from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
+
+# Load the dataset
+df = pd.read_csv('/content/diabetes_prediction_dataset.csv')
+
+# Preprocess data: Ordinal encode categorical columns
+eng = OrdinalEncoder()
+df['smoking_history'] = eng.fit_transform(df[['smoking_history']])
+df['gender'] = eng.fit_transform(df[['gender']])
+
+# Split data into features and target
+y = df['diabetes']
+x = df.drop(['diabetes'], axis=1)
+
+# Split data into training and testing sets
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.15)
+
+# Train the Random Forest Classifier model
 model = RandomForestClassifier().fit(x_train, y_train)
+
+# Take user input for prediction
+gender = int(input("Female - 0\nMale - 1\nOthers - 2\nEnter gender: "))
+age = int(input("Enter age: "))
+hypertension = int(input("Yes - 1\nNo - 0\nEnter hypertension status: "))
+heart_disease = int(input("Yes - 1\nNo - 0\nEnter heart disease status: "))
+smoking_history = int(input("0 - No Info\n1 - Current\n2 - Ever\n3 - Former\n4 - Never\n5 - Not Current\nEnter smoking history: "))
+bmi = float(input("Enter BMI: "))
+HbA1c_level = float(input("Enter HbA1c level: "))
+blood_glucose_level = float(input("Enter blood glucose level: "))
+
+# Make a prediction based on user input
+data = [[gender, age, hypertension, heart_disease, smoking_history, bmi, HbA1c_level, blood_glucose_level]]
+prediction = model.predict(data)
+
+# Evaluate model accuracy
 y_pred = model.predict(x_test)
-gender = input("Female - 0 \n Male - 1 \n others - 2 \n Enter : ")
-age = input("Enter age : ")
-hypertension = input("Yes - 1 \n No - 0 \n Enter : " )
-heart_disease = input("Yes - 1 \n No - 0 \n Enter : ")
-smoking_history = input("0 - No Info \n 1 - current \n 2 - ever \n 3 - former \n 4 - never \n 5 - not current \n Enter : ")
-bmi = input("Enter bmi  : ")
-HbA1c_level = input("Enter HbA1c_level  : ")
-blood_glucose_level = input("Enterblood_glucose_level  : \n")
-data = [[gender,age,hypertension,heart_disease,smoking_history,bmi,HbA1c_level,blood_glucose_level]]
-data_predict = model.predict(data)
-Accuracy = metrics.accuracy_score(y_test,y_pred)
-per = Accuracy * 100
-if data_predict == 0:
-  print("\n \n \n \n diabetes : No \n  Accuracy  : ",per,"%")
+accuracy = metrics.accuracy_score(y_test, y_pred) * 100
+
+# Display prediction result and accuracy
+if prediction == 0:
+    print("\nDiabetes: No\nAccuracy: {:.2f}%".format(accuracy))
 else:
-  print("\n \n \n \n diabetes : Yes \n  Accuracy : ",per,"%")
-print("\n \n \n \n ")
+    print("\nDiabetes: Yes\nAccuracy: {:.2f}%".format(accuracy))
