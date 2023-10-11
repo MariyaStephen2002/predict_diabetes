@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+df = pd.read_csv('/content/diabetes_prediction_dataset.csv')
+eng =OrdinalEncoder()
+df['smoking_history'] =eng.fit_transform(df[['smoking_history']])
+df['gender'] =eng.fit_transform(df[['gender']])
+y = df['diabetes']
+x= df.drop(['diabetes'],axis= 1)
+df.diabetes.value_counts()
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.15)
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier().fit(x_train, y_train)
+y_pred = model.predict(x_test)
+gender = input("Female - 0 \n Male - 1 \n others - 2 \n Enter : ")
+age = input("Enter age : ")
+hypertension = input("Yes - 1 \n No - 0 \n Enter : " )
+heart_disease = input("Yes - 1 \n No - 0 \n Enter : ")
+smoking_history = input("0 - No Info \n 1 - current \n 2 - ever \n 3 - former \n 4 - never \n 5 - not current \n Enter : ")
+bmi = input("Enter bmi  : ")
+HbA1c_level = input("Enter HbA1c_level  : ")
+blood_glucose_level = input("Enterblood_glucose_level  : \n")
+data = [[gender,age,hypertension,heart_disease,smoking_history,bmi,HbA1c_level,blood_glucose_level]]
+data_predict = model.predict(data)
+Accuracy = metrics.accuracy_score(y_test,y_pred)
+per = Accuracy * 100
+if data_predict == 0:
+  print("\n \n \n \n diabetes : No \n  Accuracy  : ",per,"%")
+else:
+  print("\n \n \n \n diabetes : Yes \n  Accuracy : ",per,"%")
+print("\n \n \n \n ")
